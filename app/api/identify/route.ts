@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         let body;
         try {
             body = await req.json();
-        } catch (parseError) {
+        } catch {
             return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400, headers: corsHeaders });
         }
 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
         const primaryContacts = allClusterContacts.filter(c => c.linkPrecedence === 'primary');
         primaryContacts.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-        let oldestPrimary = primaryContacts[0] || allClusterContacts.find(c => c.id === primaryIds.values().next().value) || allClusterContacts[0];
+        const oldestPrimary = primaryContacts[0] || allClusterContacts.find(c => c.id === primaryIds.values().next().value) || allClusterContacts[0];
 
         // 4. Update other primary contacts to secondary and re-link their secondaries
         const primariesToDemote = primaryContacts.slice(1);
@@ -162,11 +162,11 @@ export async function POST(req: Request) {
             }
         }, { headers: corsHeaders });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Identify API Error:', error);
         return NextResponse.json({
             error: 'Internal server error',
-            details: error?.message || String(error)
+            details: error instanceof Error ? error.message : String(error)
         }, { status: 500, headers: corsHeaders });
     }
 }

@@ -6,7 +6,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ export default function Home() {
       if (email.trim()) payload.email = email.trim();
       if (phoneNumber.trim()) payload.phoneNumber = phoneNumber.trim();
 
-      const res = await fetch("/identify", {
+      const res = await fetch("/api/identify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,8 +36,12 @@ export default function Home() {
       } else {
         setResponse(data);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to fetch");
+      }
     } finally {
       setLoading(false);
     }

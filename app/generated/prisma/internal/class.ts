@@ -47,6 +47,7 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -55,8 +56,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Contact {\n  id             Int            @id @default(autoincrement())\n  phoneNumber    String?\n  email          String?\n  linkedId       Int?\n  linkPrecedence LinkPrecedence\n  createdAt      DateTime       @default(now())\n  updatedAt      DateTime       @updatedAt\n  deletedAt      DateTime?\n}\n\nenum LinkPrecedence {\n  primary\n  secondary\n}\n",
-  "inlineSchemaHash": "762b0e62239dc7d50e71e089088ff343554fba0b560225a9a8f4f52969e60f54",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DATABASE_URL_UNPOOLED\")\n}\n\nmodel Contact {\n  id             Int            @id @default(autoincrement())\n  phoneNumber    String?\n  email          String?\n  linkedId       Int?\n  linkPrecedence LinkPrecedence\n  createdAt      DateTime       @default(now())\n  updatedAt      DateTime       @updatedAt\n  deletedAt      DateTime?\n}\n\nenum LinkPrecedence {\n  primary\n  secondary\n}\n",
+  "inlineSchemaHash": "c0fcb6aa69a54fea1f4035b3c39bd75e78a5b7ad03a47e1089a44d9a9fe34ebb",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},

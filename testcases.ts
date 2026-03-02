@@ -1,10 +1,10 @@
 import { POST } from './app/api/identify/route';
 import { prisma } from './app/lib/prisma';
 
-async function mockPost(body: any) {
+async function mockPost(body: unknown) {
     const req = {
         json: async () => body
-    } as any;
+    } as unknown as Request;
     const res = await POST(req);
     return res.json();
 }
