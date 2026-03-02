@@ -44,7 +44,21 @@ export async function POST(req: Request) {
             });
         }
 
-        // other conditions
+         // 2. We have matches. Find all related contacts in the "cluster"
+        const primaryIds = new Set(
+            matches.map((c) => (c.linkPrecedence === 'primary' ? c.id : c.linkedId)).filter(Boolean) as number[]
+        );
+
+        // Fetch all contacts in these clusters
+        const allClusterContacts = await prisma.contact.findMany({
+            where: {
+                OR: [
+                    { id: { in: Array.from(primaryIds) } },
+                    { linkedId: { in: Array.from(primaryIds) } },
+                ],
+            },
+            orderBy: { createdAt: 'asc' },
+        });
     } catch (error) {
         console.error('Identify API Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
