@@ -21,7 +21,7 @@ export default function Home() {
       if (email.trim()) payload.email = email.trim();
       if (phoneNumber.trim()) payload.phoneNumber = phoneNumber.trim();
 
-      const res = await fetch("/api/identify", {
+      const res = await fetch("/identify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
