@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -13,8 +15,14 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { email, phoneNumber } = body;
+        let body;
+        try {
+            body = await req.json();
+        } catch (parseError) {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400, headers: corsHeaders });
+        }
+
+        const { email, phoneNumber } = body || {};
 
         if (!email && !phoneNumber) {
             return NextResponse.json({ error: 'Email or phone number is required' }, { status: 400, headers: corsHeaders });
@@ -154,8 +162,11 @@ export async function POST(req: Request) {
             }
         }, { headers: corsHeaders });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Identify API Error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders });
+        return NextResponse.json({
+            error: 'Internal server error',
+            details: error?.message || String(error)
+        }, { status: 500, headers: corsHeaders });
     }
 }
