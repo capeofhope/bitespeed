@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { email, phoneNumber } = body;
 
         if (!email && !phoneNumber) {
-            return NextResponse.json({ error: 'Email or phone number is required' }, { status: 400 });
+            return NextResponse.json({ error: 'Email or phone number is required' }, { status: 400, headers: corsHeaders });
         }
 
         // Convert phoneNumber to string
@@ -41,7 +51,7 @@ export async function POST(req: Request) {
                     phoneNumbers: [newContact.phoneNumber].filter(Boolean),
                     secondaryContactIds: [],
                 },
-            });
+            }, { headers: corsHeaders });
         }
 
         // 2. We have matches. Find all related contacts in the "cluster"
@@ -142,10 +152,10 @@ export async function POST(req: Request) {
                 phoneNumbers,
                 secondaryContactIds,
             }
-        });
+        }, { headers: corsHeaders });
 
     } catch (error) {
         console.error('Identify API Error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders });
     }
 }
